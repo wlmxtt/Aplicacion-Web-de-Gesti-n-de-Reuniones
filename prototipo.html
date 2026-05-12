@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Reuniones - UGMA</title>
+    <style>
+        :root {
+            --bg: #f3f4f6;
+            --accent: #2563eb;
+            --yellow: #ffeb3b;
+            --green: #c6f6d5;
+            --black: #000000;
+            --white: #ffffff;
+            --shadow: 6px 6px 0px #000000;
+            --shadow-sm: 3px 3px 0px #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: var(--black); padding: 1.5rem; min-height: 100vh; }
+
+        .hidden { display: none !important; }
+
+        .card { 
+            background: var(--white); 
+            border: 3px solid var(--black); 
+            box-shadow: var(--shadow); 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+            position: relative;
+        }
+
+        .btn { 
+            border: 3px solid var(--black); 
+            padding: 0.75rem 1.5rem; 
+            font-weight: 900; 
+            cursor: pointer; 
+            box-shadow: var(--shadow-sm); 
+            text-transform: uppercase; 
+            background: var(--white); 
+            text-decoration: none;
+            color: var(--black);
+            display: inline-block;
+        }
+        .btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-yellow { background: var(--yellow); }
+
+        .logo { 
+            font-size: 1.2rem; 
+            font-weight: 900; 
+            border: 3px solid #000; 
+            padding: 0.4rem 0.8rem; 
+            display: inline-block; 
+            background: var(--yellow); 
+            margin-bottom: 1rem; 
+            box-shadow: var(--shadow-sm);
+        }
+
+        nav { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 2rem; 
+            max-width: 1100px; 
+            margin: 0 auto 2rem auto; 
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        input, select, textarea { 
+            width: 100%; 
+            padding: 0.8rem; 
+            border: 3px solid #000; 
+            font-weight: 700; 
+            margin-top: 0.5rem; 
+            outline: none; 
+            font-size: 1rem;
+        }
+        input:focus { background: #fffde7; }
+        label { font-weight: 900; text-transform: uppercase; font-size: 0.8rem; display: block; }
+
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA 1: LANDING -->
+    <div id="screen-landing" class="screen container">
+        <nav><div class="logo">UGMA // REUNIONES</div></nav>
+        <div class="card" style="padding: 5rem 2rem; text-align: center;">
+            <h1 style="font-size: 4rem; font-weight: 900; line-height: 1; text-transform: uppercase;">Portal Administrativo</h1>
+            <p style="margin: 2rem 0; font-weight: 700; font-size: 1.2rem;">Sistema centralizado de gestión para la directiva universitaria.</p>
+            <button class="btn btn-accent" onclick="navigate('screen-login')">Ingresar al Portal</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 2: LOGIN -->
+    <div id="screen-login" class="screen container hidden">
+        <div style="max-width: 450px; margin: 4rem auto;">
+            <div class="logo">IDENTIFICACIÓN DE USUARIO</div>
+            <div class="card">
+                <div style="margin-bottom: 1.5rem;">
+                    <label>Correo Institucional</label>
+                    <input type="text" placeholder="ejemplo@ugma.edu.ve">
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <label>Contraseña</label>
+                    <input type="password" placeholder="••••••••">
+                </div>
+                <button class="btn btn-yellow" style="width: 100%;" onclick="login()">Acceder</button>
+            </div>
+            <button class="btn" style="width: 100%;" onclick="navigate('screen-landing')">Volver al inicio</button>
+        </div>
+    </div>
+
+    <!-- PANTALLA 3: DASHBOARD -->
+    <div id="screen-dashboard" class="screen container hidden">
+        <nav>
+            <div class="logo">DASHBOARD ADMINISTRATIVO</div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-accent" onclick="navigate('screen-schedule')">+ Nueva Reunión</button>
+                <button class="btn" onclick="navigate('screen-landing')">Cerrar Sesión</button>
+            </div>
+        </nav>
+        
+        <div class="grid">
+            <div class="card">
+                <h3 style="font-weight: 900; text-transform: uppercase; margin-bottom: 1.5rem;">Próximas Reuniones</h3>
+                
+                <div class="card" style="background: var(--green); box-shadow: 4px 4px 0 #000; padding: 1.2rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <p style="font-weight: 900; font-size: 1.1rem; text-transform: uppercase;">Consejo de Facultad - FACES</p>
+                            <p style="font-size: 0.9rem; font-weight: 700; color: #1a5e37;">12 de Mayo - 10:00 AM // Auditorio Principal</p>
+                        </div>
+                        <span style="border: 2px solid #000; padding: 2px 8px; font-weight: 900; font-size: 0.7rem; background: #fff;">CONFIRMADA</span>
+                    </div>
+                </div>
+
+                <div class="card" style="box-shadow: 4px 4px 0 #000; padding: 1.2rem; margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <p style="font-weight: 900; font-size: 1.1rem; text-transform: uppercase;">Planificación Académica 2026</p>
+                            <p style="font-size: 0.9rem; font-weight: 700; color: #475569;">15 de Mayo - 2:30 PM // Sala de Juntas</p>
+                        </div>
+                        <span style="border: 2px solid #000; padding: 2px 8px; font-weight: 900; font-size: 0.7rem; background: #eee;">PENDIENTE</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="background: var(--yellow);">
+                <h3 style="font-weight: 900; text-transform: uppercase; margin-bottom: 1rem;">Resumen de Gestión</h3>
+                <div style="margin-bottom: 1rem;">
+                    <p style="font-size: 2rem; font-weight: 900;">12</p>
+                    <p style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase;">Reuniones Programadas</p>
+                </div>
+                <hr style="border: 1px solid #000; margin-bottom: 1rem;">
+                <div>
+                    <p style="font-size: 2rem; font-weight: 900;">04</p>
+                    <p style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase;">Actas de Reunión</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA 4: AGENDAR REUNIÓN -->
+    <div id="screen-schedule" class="screen container hidden">
+        <nav>
+            <div class="logo">FORMULARIO DE AGENDA</div>
+        </nav>
+        
+        <div class="card">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label>Título de la Sesión</label>
+                    <input type="text" placeholder="Ej: Comité de Escuela">
+                </div>
+                <div>
+                    <label>Ubicación / Modalidad</label>
+                    <input type="text" placeholder="Sala J1 / Microsoft Teams">
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div>
+                    <label>Fecha Seleccionada</label>
+                    <input type="date">
+                </div>
+                <div>
+                    <label>Hora de Inicio</label>
+                    <input type="time">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <label>Objetivos y Puntos de Agenda</label>
+                <textarea rows="4" placeholder="Describa los puntos clave a tratar en la sesión..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 1.5rem;">
+                <button class="btn btn-accent" onclick="confirmMeeting()">Guardar y Notificar</button>
+                <button class="btn" onclick="navigate('screen-dashboard')">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function navigate(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            const target = document.getElementById(screenId);
+            if(target) target.classList.remove('hidden');
+        }
+
+        function login() {
+            navigate('screen-dashboard');
+        }
+
+        function confirmMeeting() {
+            alert('Reunión agendada correctamente. Se ha enviado la notificación a los invitados seleccionados.');
+            navigate('screen-dashboard');
+        }
+    </script>
+</body>
+</html>
