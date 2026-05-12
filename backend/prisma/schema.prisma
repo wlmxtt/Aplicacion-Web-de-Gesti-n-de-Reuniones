@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  DIRECTOR_UGMA
+  DIRECTOR_ESCUELA
+  COORDINADOR
+  INVITADO
+}
+
+enum MeetingStatus {
+  PROGRAMADA
+  CANCELADA
+  EJECUTADA
+}
+
+enum AttendanceStatus {
+  PENDIENTE
+  CONFIRMADA
+  RECHAZADA
+  ASISTIO
+  NO_ASISTIO
+}
+
+model School {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id              String         @id @default(uuid())
+  email           String         @unique
+  password        String
+  firstName       String
+  lastName        String
+  role            Role           @default(INVITADO)
+  schoolId        String?
+  school          School?        @relation(fields: [schoolId], references: [id])
+  createdMeetings Meeting[]      @relation("MeetingCreator")
+  guestMeetings   MeetingGuest[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Meeting {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  time        String
+  location    String
+  status      MeetingStatus  @default(PROGRAMADA)
+  creatorId   String
+  creator     User           @relation("MeetingCreator", fields: [creatorId], references: [id])
+  guests      MeetingGuest[]
+  conclusions String?        @db.Text
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model MeetingGuest {
+  id                String           @id @default(uuid())
+  meetingId         String
+  meeting           Meeting          @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User             @relation(fields: [userId], references: [id])
+  attendanceStatus  AttendanceStatus @default(PENDIENTE)
+  proposedAgenda    String?          @db.Text
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([meetingId, userId])
+}

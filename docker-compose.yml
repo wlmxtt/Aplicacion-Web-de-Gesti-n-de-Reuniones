@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: ugma-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ugma_user
+      POSTGRES_PASSWORD: ugma_password
+      POSTGRES_DB: ugma_meetings
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    container_name: ugma-backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://ugma_user:ugma_password@postgres:5432/ugma_meetings?schema=public
+      - JWT_SECRET=your_very_secret_key_here
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    container_name: ugma-frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
