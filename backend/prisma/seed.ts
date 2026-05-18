@@ -25,12 +25,28 @@ async function main() {
   
   await prisma.user.upsert({
     where: { email: 'admin@ugma.edu.ve' },
-    update: {},
+    update: {
+      firstName: 'Soporte',
+      lastName: 'Técnico UGMA',
+      role: 'ADMIN',
+    },
     create: {
       email: 'admin@ugma.edu.ve',
       password: hashedPassword,
-      firstName: 'Administrador',
-      lastName: 'Sistema',
+      firstName: 'Soporte',
+      lastName: 'Técnico UGMA',
+      role: 'ADMIN',
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'rector.herrera@ugma.edu.ve' },
+    update: {},
+    create: {
+      email: 'rector.herrera@ugma.edu.ve',
+      password: hashedPassword,
+      firstName: 'Dr. Sebastian',
+      lastName: 'Herrera',
       role: 'DIRECTOR_UGMA',
     },
   });

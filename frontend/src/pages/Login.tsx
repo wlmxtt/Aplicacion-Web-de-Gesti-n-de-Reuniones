@@ -1,73 +1,122 @@
 import React, { useState } from 'react';
-import api from '../services/api';
+import { useApp } from '../context/AppContext';
+import { useNavigate } from 'react-router-dom';
+import { Shield, UserCheck, Key, GraduationCap, Lock } from 'lucide-react';
 
 const Login = () => {
+  const { login, error, clearError } = useApp();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+    setLocalError(null);
+    clearError();
     try {
-      const response = await api.post('/auth/login', { email, password });
-      localStorage.setItem('ugma_token', response.data.token);
-      localStorage.setItem('ugma_user', JSON.stringify(response.data.user));
-      window.location.href = '/dashboard';
+      await login(email.trim(), password);
+      navigate('/dashboard');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al iniciar sesión');
+      setLocalError(err.message || 'Error de autenticación. Verifique sus credenciales institucionales.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4">
-      <div className="w-full max-w-md space-y-8 bg-slate-800 p-8 rounded-3xl border border-slate-700 shadow-2xl">
-        <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-white">Bienvenido</h2>
-          <p className="mt-2 text-sm text-slate-400">Inicia sesión en el sistema UGMA</p>
+    <div className="min-h-screen bg-[#f0f0f0] p-6 font-black flex flex-col justify-center items-center relative select-none">
+      
+      {/* Header Fijo */}
+      <header className="mb-8 text-center space-y-2 max-w-md w-full">
+        <div className="inline-flex items-center space-x-3 bg-[#002855] text-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-5 py-1.5">
+          <GraduationCap className="w-6 h-6 text-[#FFB81C]" />
+          <span className="text-xl tracking-tighter italic font-black uppercase">UGMA_REUNIONES</span>
         </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm text-center bg-red-500/10 p-2 rounded-lg border border-red-500/50">{error}</div>}
+        <h1 className="text-2xl md:text-3xl tracking-tighter uppercase font-black">Control de Gestión Administrativa</h1>
+      </header>
+
+      {/* Formulario de Login Centrado Profesional */}
+      <div className="max-w-md w-full brutal-card-gold p-2 animate-in fade-in zoom-in duration-200">
+        <div className="bg-white border-4 border-black p-6 md:p-8 space-y-6">
           
-          <div className="space-y-4 rounded-md shadow-sm">
-            <div>
-              <label htmlFor="email-address" className="block text-sm font-medium text-slate-300">Correo Electrónico</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                required
-                className="mt-1 block w-full rounded-xl border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
-                placeholder="director@ugma.edu.ve"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" id="password-label" className="block text-sm font-medium text-slate-300">Contraseña</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                className="mt-1 block w-full rounded-xl border-slate-600 bg-slate-700 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          <div className="border-b-4 border-black pb-4 text-center">
+            <h3 className="text-3xl italic tracking-tighter uppercase font-black flex items-center justify-center gap-2">
+              <Lock className="w-6 h-6 text-[#002855]" /> IDENTIFICACIÓN_
+            </h3>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-1">
+              Ingresa tus credenciales institucionales
+            </p>
           </div>
 
-          <div>
+          {(localError || error) && (
+            <div className="bg-red-500 border-4 border-black text-white p-3 text-xs font-bold uppercase tracking-wider shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              Error: {localError || error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label className="text-xs font-black uppercase tracking-widest ml-1">Correo Electrónico_</label>
+              <div className="relative">
+                <input
+                  type="email"
+                  className="brutal-input pr-10 text-sm"
+                  placeholder="ejemplo@ugma.edu.ve"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+                <UserCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black uppercase tracking-widest ml-1">Contraseña_</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="brutal-input pr-10 text-sm"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-black font-black font-mono text-xs"
+                >
+                  {showPassword ? 'OCULTAR' : 'VER'}
+                </button>
+              </div>
+            </div>
+
             <button
               type="submit"
-              className="group relative flex w-full justify-center rounded-xl bg-blue-600 py-3 px-4 text-sm font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all"
+              disabled={loading}
+              className="w-full brutal-btn-navy py-3.5 text-lg flex items-center justify-center space-x-2 mt-4"
             >
-              Iniciar Sesión
+              <span>{loading ? 'ACCEDIENDO...' : 'INGRESAR AL SISTEMA →'}</span>
             </button>
+          </form>
+
+          {/* Advertencia de Auditoría de Producción en el Pie de la Ficha */}
+          <div className="bg-slate-50 border-2 border-black p-3 text-[9px] font-bold uppercase tracking-wider text-slate-500 text-center leading-relaxed">
+            🔒 SISTEMA MONITOREADO: Todas las operaciones están sujetas a los registros de auditoría de la Universidad Gran Mariscal de Ayacucho.
           </div>
-        </form>
+
+        </div>
       </div>
+
+      <footer className="mt-8 text-slate-400 text-xs tracking-widest uppercase">
+        © 2026 UGMA - Universidad Gran Mariscal de Ayacucho • Portal de Gestión de Reuniones
+      </footer>
     </div>
   );
 };

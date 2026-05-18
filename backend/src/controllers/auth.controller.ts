@@ -9,7 +9,7 @@ const registerSchema = z.object({
   password: z.string().min(6),
   firstName: z.string().min(2),
   lastName: z.string().min(2),
-  role: z.enum(['DIRECTOR_UGMA', 'DIRECTOR_ESCUELA', 'COORDINADOR', 'INVITADO']).optional(),
+  role: z.enum(['ADMIN', 'DIRECTOR_UGMA', 'DIRECTOR_ESCUELA', 'COORDINADOR', 'INVITADO']).optional(),
   schoolId: z.string().uuid().optional(),
 });
 
