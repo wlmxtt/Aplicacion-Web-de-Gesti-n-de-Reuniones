@@ -2,7 +2,7 @@ import api from './api';
 import { User, Meeting, School, Notification, Role, MeetingStatus, AttendanceStatus, MeetingGuest } from '../types';
 
 // Control flag to easily switch between Backend API and Persistent LocalStorage Mock
-const USE_API = false;
+const USE_API = true;
 
 // Mock Data Seed Definitions
 const MOCK_SCHOOLS: School[] = [

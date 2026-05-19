@@ -48,6 +48,7 @@ model User {
   school          School?        @relation(fields: [schoolId], references: [id])
   createdMeetings Meeting[]      @relation("MeetingCreator")
   guestMeetings   MeetingGuest[]
+  notifications   Notification[]
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 }
@@ -80,4 +81,30 @@ model MeetingGuest {
   updatedAt         DateTime         @updatedAt
 
   @@unique([meetingId, userId])
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ALERT
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  title     String
+  message   String           @db.Text
+  type      NotificationType @default(INFO)
+  read      Boolean          @default(false)
+  userId    String?
+  user      User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  userEmail String
+  ip        String?
+  createdAt DateTime @default(now())
 }
